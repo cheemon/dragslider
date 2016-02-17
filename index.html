@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <script type="text/javascript" src="js/jquery-1.9.1.min.js"></script>
+    <script type="text/javascript" src="js/dragslider.js"></script>
+    <style>
+        body,div,ul,li,a{list-style: none;margin:0;padding:0; }
+        .screenshots-container { position: relative;  overflow: hidden;  zoom: 1; top:10px; margin-bottom: 30px;}
+        .screenshots-container ul {overflow: hidden;position: relative;cursor:default; -moz-user-select: none;
+            -webkit-user-select: none; -ms-user-select: none; -khtml-user-select: none; user-select: none;
+        }
+        .screenshots-container li { float: left;margin-right: 24px;
+
+        }
+        .screenshots-container .screenshots-scroll {height: 5px;background-color: #dfdfdf;margin: 12px auto;
+            position: relative; border-radius: 5px; -moz-border-radius: 5px; -webkit-border-radius: 5px;
+        }
+
+
+        .screenshots-container .screenshots-scroll div {
+            position: absolute;  height: 7px;  left: 0;  top: -2px;  background-color: #8c8c8c; border-radius: 5px;  -moz-border-radius: 5px;
+            -webkit-border-radius: 5px;cursor:pointer;
+        }
+    </style>
+</head>
+<body>
+<div style="margin-left: 50px;">
+<div class="section-container screenshots">
+    <div class="section-body">
+        <div class="screenshot-container screenshots-container">
+            <ul>
+                <li><img src="img/poc1.png"></li>
+                <li><img src="img/poc2.png"></li>
+                <li><img src="img/poc3.png"></li>
+                <li><img src="img/poc4.png"></li>
+                <li><img src="img/poc3.png"></li>
+                <li><img src="img/poc4.png"></li>
+            </ul>
+        </div>
+    </div>
+</div>
+</div>
+<script type="text/javascript">
+    !function () {
+        $(".section-container.screenshots img").size() ? $(".screenshot-container").screenshots(259, 460, 20, 1010, 3) : $(".section-container.screenshots").hide();
+    }();
+</script>
+</body>
+</html>
