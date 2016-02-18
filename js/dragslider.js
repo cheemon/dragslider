@@ -1,5 +1,5 @@
 (function($){
-    $.fn.screenshots=function(width,height,space,wrapWidth,top){
+    $.fn.screenshots=function(width,height,space,wrapWidth){
         var $this=$(this),
             $ul=$this.find('ul'),
             $scroll=$('<div class="screenshots-scroll"><div></div></div>'),
@@ -54,8 +54,6 @@
                 var imgsize=$ul.find('img').size();
                 var ulWidth=imgsize*(width+space);
                 var percent=wrapWidth/(ulWidth-space);
-                var scrollLeft=0;
-                console.log('a'+percent);
                 $ul.css({width:ulWidth+"px",left:0});
                 $ul.find('li').css({width:width+"px",height:height+"px","margin-right":space+'px'});
                 $scrollDiv.css({width:100*percent+"%",left:"0px"});
