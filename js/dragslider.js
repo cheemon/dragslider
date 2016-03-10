@@ -1,77 +1,110 @@
-(function($){
-    $.fn.screenshots=function(width,height,space,wrapWidth){
-        var $this=$(this),
-            $ul=$this.find('ul'),
-            $scroll=$('<div class="screenshots-scroll"><div></div></div>'),
-            $scrollDiv = $scroll.find("div");
+(function ($) {
+    var MOUSEWHEEL = 'mousewheel';
+    var distance = 0,
+        wheel = 40,
+        start = 0,
+        axisX = 0;
+    var _this;
+    var ScreenShots = function (element, options) {
+        _this = this;
+        this.element = $(element);
+        this.options = options;
+        this.$ul = this.element.find('ul'),
+            this.$scroll = $('<div class="screenshots-scroll"><div></div></div>'),
+            this.$scrollDiv = this.$scroll.find("div");
+        this.ratio = (this.$ul.find('img').size() * (options.width + options.space) - options.space) / options.wrapWidth;
+        if (this.ratio < 1) {
+            this.$scroll.hide();
+        }
+        if (!this.element.find("img").size()) {
+            this.element.hide();
+        }
+        if (this.$ul.size()) {
+            var imgsize = this.$ul.find('img').size();
+            var ulWidth = imgsize * (options.width + options.space);
+            var percent = options.wrapWidth / (ulWidth - options.space);
+            this.$ul.css({width: ulWidth + "px", left: 0});
+            this.$ul.find('li').css({
+                width: options.width + "px",
+                height: options.height + "px",
+                "margin-right": options.space + 'px'
+            });
+            this.$scrollDiv.css({width: 100 * percent + "%", left: "0px"});
+            this.element.css({width: options.wrapWidth + "px", display: "block"}).addClass("screenshots-container");
+            this.$scroll.appendTo(this.$ul.parent());
 
-        var MOUSEWHEEL='mousewheel';
-        var distance=0,
-            wheel=40,
-            ratio=($ul.find('img').size()*(width+space)-space)/wrapWidth,
-            start= 0,
-            axisX=0;
-        if("onmousewheel" in document){
-            MOUSEWHEEL='mousewheel';
-        }else{
-            MOUSEWHEEL='DOMMouseScroll';
+
+            //滚动条拖动
+            this.$scrollDiv.on("mousedown", (function (e) {
+                _this.mouseDownEvent(e);
+            }));
+            //滚动事件
+            this.element.on(MOUSEWHEEL, function (e) {
+                var e = e || window.event;
+                e.preventDefault && e.preventDefault();
+                _this.scrollEvent(e);
+            });
+
+
         }
-        function mouseDownEvent(e){
-            start= e.pageX;
-            axisX=$scrollDiv.offset().left;
-            $(document).bind("mousemove",mouseMoveEvent);
-            $(document).bind("mouseup", mouseUpEvent);
-        }
-        function mouseMoveEvent(e){
-            (e||window.event).preventDefault();
-            var nowDistance=0;
-            if(ratio>=1){
-                nowDistance= Math.min($scroll.width() - $scrollDiv.width(),Math.max(0,axisX+(e.pageX-start))),
-                distance =nowDistance * ratio;
-                $ul.css('left', -distance);
-                $scrollDiv.css('left', nowDistance);
-             }
-        }
-        function mouseUpEvent(e){
-              $(document).unbind("mousemove", mouseMoveEvent),
-                $(document).unbind("mouseup", mouseUpEvent),
-                $scrollDiv.unbind("mouseup", mouseUpEvent);
-        }
-        function scrollEvent(e) {
-            if(ratio>=1){
-                var event=e|| e.event,
-                delta = event.originalEvent.wheelDelta ?
-                event.originalEvent.wheelDelta / 120 : -event.originalEvent.detail / 3;
+
+
+    };
+    ScreenShots.prototype = {
+        construtor: ScreenShots,
+        mouseDownEvent: function (e) {
+            start = e.pageX;
+            axisX = _this.$scrollDiv.offset().left;
+            $(document).bind("mousemove", _this.mouseMoveEvent);
+            $(document).bind("mouseup", _this.mouseUpEvent);
+        },
+        mouseMoveEvent: function (e) {
+            (e || window.event).preventDefault();
+            var nowDistance = 0;
+            if (_this.ratio >= 1) {
+                nowDistance = Math.min(_this.$scroll.width() - _this.$scrollDiv.width(), Math.max(0, axisX + (e.pageX - start))),
+                    distance = nowDistance * _this.ratio;
+                _this.$ul.css('left', -distance);
+                _this.$scrollDiv.css('left', nowDistance);
+            }
+        },
+        mouseUpEvent: function (e) {
+            $(document).unbind("mousemove", _this.mouseMoveEvent);
+            $(document).unbind("mouseup", _this.mouseUpEvent);
+            $(_this.$scrollDiv).unbind("mouseup", _this.mouseUpEvent);
+        },
+        scrollEvent: function (e) {
+
+            if (_this.ratio >= 1) {
+
+                var event = e || e.event,
+                    delta = event.originalEvent.wheelDelta ?
+                    event.originalEvent.wheelDelta / 120 : -event.originalEvent.detail / 3;
                 distance -= delta * wheel,
-                distance = Math.min($ul.width()-wrapWidth-space, Math.max(0, distance)),
-                $scrollDiv.css('left', distance /ratio),
-                $ul.css('left', -distance);
+                    distance = Math.min(_this.$ul.width() - _this.options.wrapWidth - _this.options.space, Math.max(0, distance)),
+                    _this.$scrollDiv.css('left', distance / _this.ratio),
+                    _this.$ul.css('left', -distance);
 
                 e.preventDefault();
             }
         }
-            if($ul.size()){
-                var imgsize=$ul.find('img').size();
-                var ulWidth=imgsize*(width+space);
-                var percent=wrapWidth/(ulWidth-space);
-                $ul.css({width:ulWidth+"px",left:0});
-                $ul.find('li').css({width:width+"px",height:height+"px","margin-right":space+'px'});
-                $scrollDiv.css({width:100*percent+"%",left:"0px"});
-                $this.css({width: wrapWidth+"px",display: "block"}).addClass("screenshots-container");
-                $scroll.appendTo($ul.parent());
+    };
 
-                //滚动条拖动
-                $scrollDiv.on("mousedown",function(e){
-                    mouseDownEvent(e);
-                });
-                //滚动事件
-                $this.on(MOUSEWHEEL,function(e){
-                    var e = e || window.event;
-                    e.preventDefault && e.preventDefault();
-                    scrollEvent(e);
-                });
+    $.fn.screenshots = function (option) {
+        return this.each(function () {
+            var $this = $(this),
+                options = typeof option === 'object' && option;
 
-            }
+            new ScreenShots(this, $.extend({}, $.fn.screenshots.defaults, options));
 
-    }
+        });
+    };
+    $.fn.screenshots.Constructor = ScreenShots;
+    $.fn.screenshots.defaults = {
+        width: 259,//图片宽度
+        height: 460,//图片高度
+        space: 20,//图片之间的距离
+        wrapWidth: 1010//所有图片父容器的宽度
+    };
+
 })(jQuery);

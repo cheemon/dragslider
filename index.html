@@ -44,7 +44,12 @@
 </div>
 <script type="text/javascript">
     !function () {
-        $(".section-container.screenshots img").size() ? $(".screenshot-container").screenshots(259, 460, 20, 1010, 3) : $(".section-container.screenshots").hide();
+        $(".screenshot-container").screenshots({
+            width:259,
+            height:460,
+            space:20,
+            wrapWidth:1010
+        });
     }();
 </script>
 </body>
