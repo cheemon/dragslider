@@ -5,6 +5,11 @@
         start = 0,
         axisX = 0;
     var _this;
+    if ("onmousewheel" in document) {
+        MOUSEWHEEL = "mousewheel"
+    } else {
+        MOUSEWHEEL = "DOMMouseScroll"
+    }
     var ScreenShots = function (element, options) {
         _this = this;
         this.element = $(element);
@@ -40,8 +45,6 @@
             }));
             //滚动事件
             this.element.on(MOUSEWHEEL, function (e) {
-                var e = e || window.event;
-                e.preventDefault && e.preventDefault();
                 _this.scrollEvent(e);
             });
 
@@ -74,7 +77,8 @@
             $(_this.$scrollDiv).unbind("mouseup", _this.mouseUpEvent);
         },
         scrollEvent: function (e) {
-
+            var e = e || window.event;
+            e.preventDefault();
             if (_this.ratio >= 1) {
 
                 var event = e || e.event,
@@ -85,7 +89,7 @@
                     _this.$scrollDiv.css('left', distance / _this.ratio),
                     _this.$ul.css('left', -distance);
 
-                e.preventDefault();
+
             }
         }
     };
